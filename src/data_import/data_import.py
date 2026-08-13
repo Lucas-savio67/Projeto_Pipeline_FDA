@@ -18,7 +18,8 @@ class DataImport:
         logger.info("O fluxo de importação das APIs começou! ")
         for nome_api, info_api in apis.items(): 
             try :
-                if info_api.get('paginacao', False) : 
+                paginacao = info_api.get('paginacao', False)
+                if paginacao :
                     data = self.importar_com_paginacao(nome_api, info_api)
                 else : 
                     data = self.importar_dados_apis_generico(nome_api, info_api)
@@ -45,6 +46,7 @@ class DataImport:
         headers = info_api.get('headers', None)
         try :
             while url:
+                logger.info(f"[{nome_api}] buscando página, url: {url}")
                 response = requests.get(url, params=params, headers=headers, timeout=10)
                 if response.status_code != 200:
                     raise ImportingErrors(f"status code: {response.status_code}")
@@ -52,12 +54,11 @@ class DataImport:
                     data = response.json()
                 except ValueError : 
                     raise ValueError(f"Erro, a API {nome_api} falhou, JSON inválido! ")
+                resultados.append(data)
+                url = self._extrair_proximo_link(response)
+                params = None  
         except requests.exceptions.Timeout : 
             raise TimeoutError(f"Erro, a API {nome_api} falhou, tempo máximo excedido! ")
-
-        resultados.append(data)
-        url = self._extrair_proximo_link(response)
-        params = None  
         return resultados
 
     def _extrair_proximo_link(self, response) -> str | None:
