@@ -12,8 +12,7 @@ class DataImport:
     def importar_dados_apis(self, apis:dict[str, Any]) -> dict[str, Any] : 
         imported_apis = {}
         if apis :
-            for tipo_dado,chave in apis.items(): 
-                for nome_api,info in chave.items(): 
+            for nome_api,info in apis.items(): 
                     if info['params']: 
                         response = requests.get(info['url'], info['params'], timeout=10)
                     else : 
@@ -25,7 +24,7 @@ class DataImport:
                         data = response.json()
                         logger.info(f"A API {nome_api} foi importada com sucesso! ")
                         imported_apis[nome_api] = data
-                        self.imported_data[tipo_dado] = imported_apis
+                        self.imported_data['apis'] = imported_apis
             return self.imported_data
         else : 
             return 'Sem APIs para importar! '
