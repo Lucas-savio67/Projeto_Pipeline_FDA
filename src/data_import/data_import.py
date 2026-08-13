@@ -16,10 +16,8 @@ class DataImport:
         if apis :
             logger.info("A importação de APIs começou! ")
             for nome_api,info in apis.items(): 
-                    if info['params']: 
-                        response = requests.get(info['url'], info['params'], timeout=10)
-                    else : 
-                        response = requests.get(info['url'], timeout=10)
+                    params = info.get('params', None)
+                    response = requests.get(url=info['url'], params=params,timeout=10)
                     if response.status_code != 200 : 
                         logger.warning(f"Erro, a API {nome_api} falhou, code: {response.status_code}")
                         api_errors[nome_api] = {'status_code': response.status_code}
