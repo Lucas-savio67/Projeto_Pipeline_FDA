@@ -2,37 +2,92 @@ import requests
 import logging 
 from typing import Any
 logger = logging.getLogger(__name__)
+class ImportingErrors(Exception): 
+    pass
 class DataImport: 
     def __init__(self, data_dict:dict[str, Any]) -> None: 
         self.data = data_dict 
         self.imported_data:dict[str, Any] = {}
-    def importar_dados(self) -> str : 
-        apis = self.data.get('apis', [])
-        self.importar_dados_apis(apis)
-        return self.imported_data
-    def importar_dados_apis(self, apis:dict[str, Any]) -> dict[str, Any] : 
+    def importar_apis(self) -> dict[str,Any] : 
+        if not self.data : 
+            logger.error("Erro fatal, o dicionário de fontes está vazio! ")
+            raise ImportingErrors("Erro fatal, o dicionário de fontes está vazio! ")
         imported_apis = {}
-        api_errors = {}
-        if apis :
-            logger.info("A importação de APIs começou! ")
-            for nome_api,info in apis.items(): 
-                    params = info.get('params', None)
-                    response = requests.get(url=info['url'], params=params,timeout=10)
-                    if response.status_code != 200 : 
-                        logger.warning(f"Erro, a API {nome_api} falhou, code: {response.status_code}")
-                        api_errors[nome_api] = {'status_code': response.status_code}
-                        continue 
-                    else : 
-                        data = response.json()
-                        logger.info(f"A API {nome_api} foi importada com sucesso! ")
-                        imported_apis[nome_api] = data
-                        self.imported_data['apis'] = imported_apis
-            logger.info("A importação de APIs terminou! ")
-            logger.info(f"APIs importadas com êxito: {list(imported_apis.keys())}")
-            if api_errors : 
-                logger.info(f"APIs que falharam: {api_errors}")
-            return self.imported_data
-        else : 
-            logger.info('Não há APIs para importar, pulando este módulo...')
-            return 'Sem APIs para importar! '
+        apis_errors = {}
+        apis = self.data.get('apis', [])
+        logger.info("O fluxo de importação das APIs começou! ")
+        for nome_api, info_api in apis.items(): 
+            try :
+                if info_api.get('paginacao', False) : 
+                    data = self.importar_com_paginacao(nome_api, info_api)
+                else : 
+                    data = self.importar_dados_apis_generico(nome_api, info_api)
+                imported_apis[nome_api] = data
+            except ImportingErrors as e : 
+                logger.warning(str(e))
+                apis_errors[nome_api] = {'status_code': str(e)}
+            except ValueError as e : 
+                logger.warning(str(e))
+                apis_errors[nome_api] = {'erro': str(e)}
+            except TimeoutError as e : 
+                logger.warning(str(e))
+                apis_errors[nome_api] = {'erro': str(e)}
+        if apis_errors : 
+            logger.info(f"APIs com erro {apis_errors}")
+        logger.info(f"APIs importadas com sucesso: {list(imported_apis.keys())}")
+        logger.info("O fluxo de importação das APIs terminou! ")
+        self.imported_data['apis'] = imported_apis
+        return self.imported_data
+    def importar_com_paginacao(self, nome_api:str, info_api:dict[str,Any]) -> list[Any]:
+        resultados = []
+        url = info_api['url']
+        params = info_api.get('params', None)
+        headers = info_api.get('headers', None)
+        try :
+            while url:
+                response = requests.get(url, params=params, headers=headers, timeout=10)
+                if response.status_code != 200:
+                    raise ImportingErrors(f"status code: {response.status_code}")
+                try :
+                    data = response.json()
+                except ValueError : 
+                    raise ValueError(f"Erro, a API {nome_api} falhou, JSON inválido! ")
+        except requests.exceptions.Timeout : 
+            raise TimeoutError(f"Erro, a API {nome_api} falhou, tempo máximo excedido! ")
+
+        resultados.append(data)
+        url = self._extrair_proximo_link(response)
+        params = None  
+        return resultados
+
+    def _extrair_proximo_link(self, response) -> str | None:
+        link_header = response.headers.get('Link')
+        if not link_header:
+            return None
+
+    
+        for parte in link_header.split(','):
+            if 'rel="next"' in parte:
+            
+                inicio = parte.find('<') + 1
+                fim = parte.find('>')
+                if inicio > 0 and fim > inicio:
+                    return parte[inicio:fim].strip()
+
+        return None
+    def importar_dados_apis_generico(self, nome_api:str, info_api:dict[str,Any]) -> dict[str, Any] : 
+        params = info_api.get('params', None)
+        try :
+            response = requests.get(url=info_api['url'], params=params,timeout=10)
+            if response.status_code != 200 : 
+                raise ImportingErrors(f'Erro, a API {nome_api} falhou, status code: {response.status_code}')
+            try :
+                data = response.json()
+                return data
+            except ValueError : 
+                raise ValueError(f'Erro, a api {nome_api} falhou, JSON inválido! ')
+        except requests.exceptions.Timeout: 
+            raise TimeoutError(f"Erro, a API {nome_api} falhou, tempo máximo excedido! ")
+        
+        
             
