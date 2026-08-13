@@ -1,0 +1,4 @@
+2026-08-12 21:37:54,105 - INFO - A importação de APIs começou! 
+2026-08-12 21:37:58,221 - INFO - A API FDA_DRUG foi importada com sucesso! 
+2026-08-12 21:37:58,221 - INFO - A importação de APIs terminou! 
+2026-08-12 21:37:58,221 - INFO - APIs importadas com êxito: ['FDA_DRUG']
