@@ -29,10 +29,10 @@ class DataIngestion :
         logger.info("Começando o fluxo de ingestão das APIs...")
         for nome_api, api in apis.items() :
             logger.info(f"Injetando a APi {nome_api} no diretório data! ")
-            output_file = f'data/{nome_api}.json'
+            output_file = f'data/bronze/apis{nome_api}.json'
             try :
                 with open(output_file, 'w') as f : 
-                    json.dump(api, f) 
+                    json.dump(api, f, indent=3) 
                 logger.info(f"A API {nome_api} foi carregada no diretório data com sucesso! ")
                 ingested_apis['apis'] = {nome_api: 'injetada'}
             except (OSError, TypeError) as e : 
