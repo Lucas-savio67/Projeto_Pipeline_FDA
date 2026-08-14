@@ -13,7 +13,7 @@ class DataIngestion :
             logger.error("Erro, nenhum dado foi importado, o dicionário está vazio! ")
             raise IngestionErrors("Erro, nenhum dado foi importado, o dicionário está vazio! ")
         logger.info("Começando o fluxo  de ingestão dos dados! ")
-        apis = self.imported_data.get('apis', [])
+        apis = self.imported_data.get('apis', {})
         data =self.injetar_dado_apis(apis)
         ingested_data['dados_injetados'] = data
         logger.info("O fluxo de ingestão terminou")
@@ -29,6 +29,6 @@ class DataIngestion :
             output_file = f'data/{nome_api}.json'
             with open(output_file, 'w') as f : 
                 json.dump(api, f) 
-            ingested_apis['apis'] = nome_api
             logger.info(f"A API {nome_api} foi carregada no diretório data com sucesso! ")
+        ingested_apis['apis'] = nome_api
         return ingested_apis
