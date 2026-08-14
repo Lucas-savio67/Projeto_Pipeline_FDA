@@ -19,12 +19,12 @@ class DataIngestion :
         logger.info("O fluxo de ingestão terminou")
         logger.info(f"Dados injetados com sucesso: {ingested_data}")
 
-    def injetar_dado_apis(self, apis:dict[str,Any]) -> str : 
+    def injetar_dado_apis(self, apis:dict[str,Any]) -> dict : 
         ingested_apis = {}
         if not apis : 
             logger.warning("O tipo de dado API não foi encontrado! ")
         logger.info("Começando o fluxo de ingestão das APIs...")
-        for nome_api, api in apis :
+        for nome_api, api in apis.items() :
             logger.info(f"Injetando a APi {nome_api} no diretório data! ")
             output_file = f'data/{nome_api}.json'
             with open(output_file, 'w') as f : 
