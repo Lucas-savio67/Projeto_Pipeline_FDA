@@ -26,7 +26,7 @@ class DataImport:
                 imported_apis[nome_api] = data
             except ImportingErrors as e : 
                 logger.warning(str(e))
-                apis_errors[nome_api] = {'status_code': str(e)}
+                apis_errors[nome_api] = {str(e)}
             except ValueError as e : 
                 logger.warning(str(e))
                 apis_errors[nome_api] = {'erro': str(e)}

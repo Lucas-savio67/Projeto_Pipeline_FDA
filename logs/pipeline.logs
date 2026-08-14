@@ -1,6 +1,7 @@
-2026-08-13 18:50:45,848 - INFO - O fluxo de importação das APIs começou! 
-2026-08-13 18:50:45,848 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
-2026-08-13 18:50:47,043 - WARNING - status code: 403
-2026-08-13 18:50:47,045 - INFO - APIs com erro {'FDA_DRUG': {'status_code': 'status code: 403'}}
-2026-08-13 18:50:47,045 - INFO - APIs importadas com sucesso: []
-2026-08-13 18:50:47,045 - INFO - O fluxo de importação das APIs terminou! 
+2026-08-14 16:50:40,639 - INFO - O fluxo de importação das APIs começou! 
+2026-08-14 16:50:40,639 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
+2026-08-14 16:50:45,019 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
+2026-08-14 16:50:46,148 - WARNING - status code: 403
+2026-08-14 16:50:46,171 - INFO - APIs com erro {'FDA_DRUG': {'status code: 403'}}
+2026-08-14 16:50:46,171 - INFO - APIs importadas com sucesso: []
+2026-08-14 16:50:46,171 - INFO - O fluxo de importação das APIs terminou! 
