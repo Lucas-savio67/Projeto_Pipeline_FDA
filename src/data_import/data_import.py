@@ -44,10 +44,17 @@ class DataImport:
         url = info_api['url']
         params = info_api.get('params', None)
         headers = info_api.get('headers', None)
+        max_paginas = info_api.get('max_paginas', None)
+        api_key = params.get('api_key') if params else None
+        n_paginas = 0
         try :
             while url:
+                if max_paginas is not None and n_paginas >= max_paginas : 
+                    logger.info(f"Maximo de páginas alcançado, páginas retornadas: {max_paginas} para a API {nome_api}! ")
+                    break
                 logger.info(f"[{nome_api}] buscando página, url: {url}")
-                response = requests.get(url, params=params, headers=headers, timeout=10)
+                request_params = params if params else {'api_key': api_key}
+                response = requests.get(url, params=request_params, headers=headers, timeout=10)
                 if response.status_code != 200:
                     raise ImportingErrors(f"status code: {response.status_code}")
                 try :
@@ -55,6 +62,7 @@ class DataImport:
                 except ValueError : 
                     raise ValueError(f"Erro, a API {nome_api} falhou, JSON inválido! ")
                 resultados.append(data)
+                n_paginas+=1
                 url = self._extrair_proximo_link(response)
                 params = None  
         except requests.exceptions.Timeout : 

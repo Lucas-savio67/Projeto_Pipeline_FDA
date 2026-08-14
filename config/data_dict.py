@@ -12,7 +12,8 @@ def data_source_dict():
                     'limit': 1000 , 
                     'sort': 'receivedate:asc' , 
                     'api_key': os.getenv("API_KEY_FDA")
-                }}
+                } ,
+                'max_paginas': 11}
         
         }
     }
