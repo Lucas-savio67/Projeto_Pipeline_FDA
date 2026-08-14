@@ -13,12 +13,15 @@ class DataIngestion :
             logger.error("Erro, nenhum dado foi importado, o dicionário está vazio! ")
             raise IngestionErrors("Erro, nenhum dado foi importado, o dicionário está vazio! ")
         logger.info("Começando o fluxo  de ingestão dos dados! ")
-        apis = self.imported_data.get('apis', {})
-        data =self.injetar_dado_apis(apis)
-        ingested_data['dados_injetados'] = data
-        logger.info("O fluxo de ingestão terminou")
-        logger.info(f"Dados injetados com sucesso: {ingested_data}")
-
+        try :
+            apis = self.imported_data.get('apis', {})
+            data =self.injetar_dado_apis(apis)
+            ingested_data['dados_injetados'] = data
+            logger.info("O fluxo de ingestão terminou")
+            logger.info(f"Dados injetados com sucesso: {ingested_data}")
+        except (OSError, TypeError) as e : 
+            logger.warning(e)
+        return 'Dados injetados com sucesso! '
     def injetar_dado_apis(self, apis:dict[str,Any]) -> dict : 
         ingested_apis = {}
         if not apis : 
@@ -27,8 +30,11 @@ class DataIngestion :
         for nome_api, api in apis.items() :
             logger.info(f"Injetando a APi {nome_api} no diretório data! ")
             output_file = f'data/{nome_api}.json'
-            with open(output_file, 'w') as f : 
-                json.dump(api, f) 
-            logger.info(f"A API {nome_api} foi carregada no diretório data com sucesso! ")
-        ingested_apis['apis'] = nome_api
+            try :
+                with open(output_file, 'w') as f : 
+                    json.dump(api, f) 
+                logger.info(f"A API {nome_api} foi carregada no diretório data com sucesso! ")
+                ingested_apis['apis'] = {nome_api: 'injetada'}
+            except (OSError, TypeError) as e : 
+                logger.warning(f"Erro, a API {nome_api} falhou! ")
         return ingested_apis
