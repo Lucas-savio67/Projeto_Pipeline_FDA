@@ -27,6 +27,7 @@ class DataExtraction :
         return self.extracted_data
     def extrair_dados_apis(self, diretorio:str) -> dict[str,Any]: 
         extracted_apis = {}
+        diretorio = Path(diretorio)
         if not diretorio.exists(): 
             logger.warning("Nenhuma API foi encontrada! ")
             raise ExtractionErrors("Nenhuma API foi encontrada! ")
