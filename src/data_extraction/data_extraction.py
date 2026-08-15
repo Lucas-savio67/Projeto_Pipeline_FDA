@@ -34,8 +34,8 @@ class DataExtraction :
         for arquivo in diretorio.iterdir(): 
             if arquivo.is_file(): 
                 nome_api = arquivo.name.split('.json')
-                caminho_arquivo = f'diretorio/{arquivo}' 
-                with open(caminho_arquivo, 'w', encoding='utf-8') as f : 
+                caminho_arquivo = f'{arquivo}' 
+                with open(caminho_arquivo, 'r', encoding='utf-8') as f : 
                     api_data = json.load(f)
                     extracted_apis[nome_api[0]] = api_data
                 logger.info(f"O arquivo {arquivo} foi extraído com sucesso! ")
