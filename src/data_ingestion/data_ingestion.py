@@ -35,6 +35,8 @@ class DataIngestion :
                     json.dump(api, f, indent=3) 
                 logger.info(f"A API {nome_api} foi carregada no diretório data com sucesso! ")
                 ingested_apis['apis'] = {nome_api: 'injetada'}
-            except (OSError, TypeError) as e : 
-                logger.warning(f"Erro, a API {nome_api} falhou! ")
+            except OSError as e : 
+                logger.warning(f"Erro, a API {nome_api} falhou, erro de sistema: {e}!  ")
+            except TypeError as e : 
+                logger.warning(f"Erro, a API {nome_api} falhou, valor inválido encontrado, {e}! ")
         return ingested_apis
