@@ -33,7 +33,7 @@ class DataExtraction :
             raise ExtractionErrors("Nenhuma API foi encontrada! ")
         for arquivo in diretorio.iterdir(): 
             if arquivo.is_file(): 
-                nome_api = arquivo.split('.json')
+                nome_api = arquivo.name.split('.json')
                 caminho_arquivo = f'diretorio/{arquivo}' 
                 with open(caminho_arquivo, 'w', enconding='utf-8') as f : 
                     api_data = json.load(f)
