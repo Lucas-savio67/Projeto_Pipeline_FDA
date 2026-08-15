@@ -9,6 +9,7 @@ class DataExtraction :
     def __init__(self) -> None : 
         self.extracted_data : dict[str, dict[str,Any]] = {}
     def extrair_dados(self) -> dict[str, dict[str,Any]]: 
+        lista_conteudo_extraido ={}
         dados = Path('data/bronze/')
         if not dados.exists(): 
             logger.error(f"Erro, nenhum arquivo foi injetado no caminho! ")
@@ -27,7 +28,9 @@ class DataExtraction :
             except PermissionError as e : 
                 logger.warning(str(e))
         logger.info("O fluxo de extracão terminou! ")
-        logger.info(f"Dados extraídos: {self.extracted_data}")
+        for tipo,conteudo_extraido in self.extracted_data.items(): 
+            lista_conteudo_extraido[tipo] = list(conteudo_extraido.keys())
+        logger.info(f"Dados extraídos: {lista_conteudo_extraido}")
         return self.extracted_data
     def extrair_dados_apis(self, diretorio:str) -> dict[str,Any]: 
         extracted_apis = {}
