@@ -9,11 +9,11 @@ class DataExtraction :
     def __init__(self) -> None : 
         self.extracted_data : dict[str, dict[str,Any]] = {}
     def extrair_dados(self) -> dict[str, dict[str,Any]]: 
-        dados = Path('data/bronze')
+        dados = Path('data/bronze/')
         if not dados.exists(): 
             logger.error(f"Erro, nenhum arquivo foi injetado no caminho! ")
             raise ExtractionErrors(f"Erro, nenhum arquivo foi injetado no caminho! ")
-        
+        logger.info("Começando o fluxo de extração...")
         for tipo_dado in dados.iterdir(): 
             try :
                 if tipo_dado == 'apis': 
