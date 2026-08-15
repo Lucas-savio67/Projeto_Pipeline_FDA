@@ -1,15 +1,21 @@
-2026-08-14 17:20:35,186 - INFO - O fluxo de importação das APIs começou! 
-2026-08-14 17:20:35,186 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
-2026-08-14 17:20:39,781 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
-2026-08-14 17:20:44,905 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21805119
-2026-08-14 17:20:49,521 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21806126
-2026-08-14 17:20:54,972 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21807132
-2026-08-14 17:20:58,960 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21808056
-2026-08-14 17:21:03,005 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21809060
-2026-08-14 17:21:07,724 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21810131
-2026-08-14 17:21:12,591 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21811230
-2026-08-14 17:21:16,933 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21812353
-2026-08-14 17:21:21,182 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21813478
-2026-08-14 17:21:27,151 - INFO - Maximo de páginas alcançado, páginas retornadas: 11 para a API FDA_DRUG! 
-2026-08-14 17:21:27,154 - INFO - APIs importadas com sucesso: ['FDA_DRUG']
-2026-08-14 17:21:27,154 - INFO - O fluxo de importação das APIs terminou! 
+2026-08-15 14:35:05,322 - INFO - O fluxo de importação das APIs começou! 
+2026-08-15 14:35:05,322 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
+2026-08-15 14:35:12,735 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
+2026-08-15 14:35:16,877 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21805119
+2026-08-15 14:35:21,119 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21806126
+2026-08-15 14:35:25,132 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21807132
+2026-08-15 14:35:39,736 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21808056
+2026-08-15 14:35:43,489 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21809060
+2026-08-15 14:35:47,601 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21810131
+2026-08-15 14:35:51,459 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21811230
+2026-08-15 14:36:00,907 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21812353
+2026-08-15 14:36:05,787 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672704000000%3B1%3D21813478
+2026-08-15 14:36:10,033 - INFO - Maximo de páginas alcançado, páginas retornadas: 11 para a API FDA_DRUG! 
+2026-08-15 14:36:10,036 - INFO - APIs importadas com sucesso: ['FDA_DRUG']
+2026-08-15 14:36:10,036 - INFO - O fluxo de importação das APIs terminou! 
+2026-08-15 14:36:10,036 - INFO - Começando o fluxo  de ingestão dos dados! 
+2026-08-15 14:36:10,036 - INFO - Começando o fluxo de ingestão das APIs...
+2026-08-15 14:36:10,036 - INFO - Injetando a APi FDA_DRUG no diretório data! 
+2026-08-15 14:36:21,814 - INFO - A API FDA_DRUG foi carregada no diretório data com sucesso! 
+2026-08-15 14:36:21,814 - INFO - O fluxo de ingestão terminou
+2026-08-15 14:36:21,814 - INFO - Dados injetados com sucesso: {'dados_injetados': {'apis': {'FDA_DRUG': 'injetada'}}}
