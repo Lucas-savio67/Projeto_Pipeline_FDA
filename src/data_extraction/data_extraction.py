@@ -17,10 +17,13 @@ class DataExtraction :
         for tipo_dado in dados.iterdir(): 
             try :
                 if tipo_dado == 'apis': 
-                    api_data = self.extrair_dados_apis('data/bronze/apis')
+                    logger.info("Procurando por APIs injetadas...")
+                    api_data = self.extrair_dados_apis('data/bronze/apis/')
                     self.extracted_data['apis'] = api_data
             except ExtractionErrors as e : 
                 logger.warning(e)
+        logger.info("O fluxo de extracão terminou! ")
+        logger.info(f"Dados extraídos: {self.extracted_data}")
         return self.extracted_data
     def extrair_dados_apis(self, diretorio:str) -> dict[str,Any]: 
         extracted_apis = {}
