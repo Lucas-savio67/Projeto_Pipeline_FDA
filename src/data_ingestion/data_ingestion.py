@@ -2,11 +2,14 @@ import logging
 import json 
 logger = logging.getLogger(__name__)
 from typing import Any 
+from mypy_boto3_s3.client import S3Client
 class IngestionErrors(Exception): 
     pass
 class DataIngestion : 
-    def __init__(self, imported_data:dict[str, dict[str,Any]]) -> None : 
+    def __init__(self, imported_data:dict[str, dict[str,Any]], client:S3Client, bucket_name:str) -> None : 
         self.imported_data = imported_data 
+        self.client = client 
+        self.bucket = bucket_name
     def injetar_dados(self) -> str : 
         ingested_data = {}
         if not self.imported_data : 
@@ -28,12 +31,16 @@ class DataIngestion :
             logger.warning("O tipo de dado API não foi encontrado! ")
         logger.info("Começando o fluxo de ingestão das APIs...")
         for nome_api, api in apis.items() :
-            logger.info(f"Injetando a APi {nome_api} no diretório data! ")
+            logger.info(f"Injetando a APi {nome_api} no bucket S3! ")
             output_file = f'data/bronze/apis/{nome_api}.json'
             try :
                 with open(output_file, 'w') as f : 
-                    json.dump(api, f, indent=3) 
-                logger.info(f"A API {nome_api} foi carregada no diretório data com sucesso! ")
+                    json.dump(api[:100], f, indent=3) 
+                self.client.put_object(Bucket=self.bucket, 
+                                        Key=f'bronze/{nome_api}/{nome_api}.json',
+                                        Body=json.dumps(api))
+                logger.info(f"A API {nome_api} foi carregada no bcuker S3 com sucesso! ")
+                logger.info(f"Uma prévia dos dados foi carregada no diretório data com sucesso! ")
                 ingested_apis['apis'] = {nome_api: 'injetada'}
             except OSError as e : 
                 logger.warning(f"Erro, a API {nome_api} falhou, erro de sistema: {e}!  ")
