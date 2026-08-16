@@ -1,57 +1,58 @@
 import logging
 import json
 from typing import Any
-from pathlib import Path
+from mypy_boto3_s3.client import S3Client 
+from botocore.exceptions import ClientError
 logger = logging.getLogger(__name__)
 class ExtractionErrors(Exception): 
     pass
 class DataExtraction : 
-    def __init__(self) -> None : 
+    def __init__(self, client:S3Client, bucket:str) -> None : 
         self.extracted_data : dict[str, dict[str,Any]] = {}
+        self.client = client 
+        self.bucket= bucket
     def extrair_dados(self) -> dict[str, dict[str,Any]]: 
-        lista_conteudo_extraido ={}
-        dados = Path('data/bronze/')
-        if not dados.exists(): 
-            logger.error(f"Erro, nenhum arquivo foi injetado no caminho! ")
-            raise ExtractionErrors(f"Erro, nenhum arquivo foi injetado no caminho! ")
-        logger.info("Começando o fluxo de extração...")
-        for tipo_dado in dados.iterdir(): 
-            try :
-                if tipo_dado.name == 'apis' and tipo_dado.is_dir(): 
-                    logger.info("Procurando por APIs injetadas...")
-                    api_data = self.extrair_dados_apis('data/bronze/apis/')
-                    self.extracted_data['apis'] = api_data
-            except ExtractionErrors as e : 
-                logger.warning(str(e))
-            except json.JSONDecodeError as e: 
-                logger.warning(str(e))
-            except PermissionError as e : 
-                logger.warning(str(e))
-        logger.info("O fluxo de extracão terminou! ")
-        for tipo,conteudo_extraido in self.extracted_data.items(): 
-            lista_conteudo_extraido[tipo] = list(conteudo_extraido.keys())
-        logger.info(f"Dados extraídos: {lista_conteudo_extraido}")
+        conteudo_extraido = {}
+        erros = {}
+        logger.info("Começando o fluxo de extração dos objetos no bucket S3! ")
+        paginator = self.client.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket = self.bucket, Prefix='bronze/'): 
+            for obj in page.get('Contents', []): 
+                try :
+                    key = obj['Key']
+                    if key.endswith('.json'): 
+                            data_api = self.extrair_dados_apis(key)
+                            
+                except ExtractionErrors as e : 
+                    logger.warning(str(e))
+                    erros[key] = {'erro': str(e)}
+        self.extracted_data['apis'] = data_api
+        logger.info("O fluxo de extração terminou! ")
+        if erros :
+            logger.info(f"Arquivos com erro: {erros}")
+        for nome_dado, valor_extraido in self.extracted_data.items(): 
+            conteudo_extraido[nome_dado] = list(valor_extraido.keys())
+        logger.info(f"Arquivos extraídos com sucesso: {conteudo_extraido}")
         return self.extracted_data
-    def extrair_dados_apis(self, diretorio:str) -> dict[str,Any]: 
-        extracted_apis = {}
-        diretorio = Path(diretorio)
-        if not diretorio.exists(): 
-            logger.warning("Nenhuma API foi encontrada! ")
-            raise ExtractionErrors("Nenhuma API foi encontrada! ")
+            
+    def extrair_dados_apis(self, key:Any) -> dict[str,Any]: 
         try :
-            for arquivo in diretorio.iterdir(): 
-                if arquivo.is_file(): 
-                    nome_api = arquivo.name.split('.json')
-                    caminho_arquivo = f'{arquivo}' 
-                    try :
-                        with open(caminho_arquivo, 'r', encoding='utf-8') as f : 
-                            api_data = json.load(f)
-                            extracted_apis[nome_api[0]] = api_data
-                        logger.info(f"O arquivo {arquivo} foi extraído com sucesso! ")
-                    except json.JSONDecodeError as e : 
-                        logger.warning(f"Erro {e}, o JSON {nome_api} é inválido! ")
-                    except PermissionError as e : 
-                        logger.warning(f"Erro {e}, permissão de leitura negada para a API {nome_api}! ")
-        except NotADirectoryError as e : 
-            raise ExtractionErrors("Erro, o caminho fornecido não é um diretório! ") 
-        return extracted_apis
+            extracted_apis = {}
+            response = self.client.get_object(Bucket=self.bucket, Key=key)
+            conteudo = response['Body'].read()
+            extracted_apis[key] = json.loads(conteudo)
+            logger.info(f"Key: {key} extraída com sucesso! ")
+            return extracted_apis
+        except ClientError as e : 
+            codigo = e.response['Error']['Code']
+            if codigo == 'NoSuchKey':
+                raise ExtractionErrors(f'Objeto não existe mais: {key}')
+            elif codigo == 'AccessDenied':
+                raise ExtractionErrors(f'Sem permissão para acessar: {key}')
+            elif codigo == 'NoSuchBucket':
+                raise ExtractionErrors(f'Bucket não existe: {self.bucket}')
+            else:
+                raise ExtractionErrors(f'Erro S3 ({codigo}): {key}')
+        except json.JSONDecodeError as e : 
+            raise ExtractionErrors(f'JSON inválido para a key: {key}! ')
+        
