@@ -13,9 +13,9 @@ def main():
                             aws_secret_access_key=info_s3['chave_secreta'], 
                             region_name=info_s3['região'])
         data_sources = data_source_dict()
-        importacao = DataImport(data_sources, s3_client, info_s3['bucket'])
+        importacao = DataImport(data_sources)
         importar = importacao.importar_apis()
-        ingestao = DataIngestion(importar)
+        ingestao = DataIngestion(importar, s3_client, info_s3['bucket'])
         injetar = ingestao.injetar_dados()
         extracao = DataExtraction(s3_client, info_s3['bucket'])
         extrair = extracao.extrair_dados()
