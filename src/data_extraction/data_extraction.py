@@ -22,11 +22,11 @@ class DataExtraction :
                     key = obj['Key']
                     if key.endswith('.json'): 
                             data_api = self.extrair_dados_apis(key)
-                            
+                            self.extracted_data.setdefault('apis', {})[key] = data_api
                 except ExtractionErrors as e : 
                     logger.warning(str(e))
                     erros[key] = {'erro': str(e)}
-        self.extracted_data['apis'] = data_api
+        
         logger.info("O fluxo de extração terminou! ")
         if erros :
             logger.info(f"Arquivos com erro: {erros}")
