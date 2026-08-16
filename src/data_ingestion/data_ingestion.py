@@ -39,7 +39,7 @@ class DataIngestion :
                 self.client.put_object(Bucket=self.bucket, 
                                         Key=f'bronze/{nome_api}/{nome_api}.json',
                                         Body=json.dumps(api))
-                logger.info(f"A API {nome_api} foi carregada no bcuker S3 com sucesso! ")
+                logger.info(f"A API {nome_api} foi carregada no bucket S3 com sucesso! ")
                 logger.info(f"Uma prévia dos dados foi carregada no diretório data com sucesso! ")
                 ingested_apis['apis'] = {nome_api: 'injetada'}
             except OSError as e : 
