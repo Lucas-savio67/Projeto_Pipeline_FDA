@@ -3,6 +3,7 @@ import json
 logger = logging.getLogger(__name__)
 from typing import Any 
 from mypy_boto3_s3.client import S3Client
+from botocore.exceptions import ClientError
 class IngestionErrors(Exception): 
     pass
 class DataIngestion : 
@@ -22,7 +23,7 @@ class DataIngestion :
             ingested_data['dados_injetados'] = data
             logger.info("O fluxo de ingestão terminou")
             logger.info(f"Dados injetados com sucesso: {ingested_data}")
-        except (OSError, TypeError) as e : 
+        except (ClientError, TypeError) as e : 
             logger.warning(e)
         return 'Dados injetados com sucesso! '
     def injetar_dado_apis(self, apis:dict[str,Any]) -> dict : 
@@ -32,18 +33,24 @@ class DataIngestion :
         logger.info("Começando o fluxo de ingestão das APIs...")
         for nome_api, api in apis.items() :
             logger.info(f"Injetando a APi {nome_api} no bucket S3! ")
-            output_file = f'data/bronze/apis/{nome_api}.json'
+            
             try :
-                with open(output_file, 'w') as f : 
-                    json.dump(api[:100], f, indent=3) 
                 self.client.put_object(Bucket=self.bucket, 
                                         Key=f'bronze/{nome_api}/{nome_api}.json',
                                         Body=json.dumps(api))
                 logger.info(f"A API {nome_api} foi carregada no bucket S3 com sucesso! ")
                 logger.info(f"Uma prévia dos dados foi carregada no diretório data com sucesso! ")
                 ingested_apis['apis'] = {nome_api: 'injetada'}
-            except OSError as e : 
-                logger.warning(f"Erro, a API {nome_api} falhou, erro de sistema: {e}!  ")
+            except ClientError as e:
+                codigo = e.response['Error']['Code']
+                if codigo == 'AccessDenied':
+                    logger.warning(f'Sem permissão para escrever: {nome_api}')
+                elif codigo == 'NoSuchBucket':
+                    logger.warning(f'Bucket não existe: {self.bucket}')
+                elif codigo == 'EntityTooLarge':
+                    logger.warning(f'Objeto excede tamanho máximo: {nome_api}')
+                else:
+                    logger.warning(f'Erro S3 ({codigo}): {nome_api}')
             except TypeError as e : 
                 logger.warning(f"Erro, a API {nome_api} falhou, valor inválido encontrado, {e}! ")
         return ingested_apis
