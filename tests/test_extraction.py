@@ -1,55 +1,41 @@
 import logging
 import pytest
 import json
-from unittest.mock import Mock, patch, MagicMock
+import io
+from unittest.mock import patch, MagicMock
 from src.data_extraction.data_extraction import DataExtraction, ExtractionErrors
+from botocore.exceptions import ClientError
+from json import JSONDecodeError
+def test_success_extraction(): 
+    dados_teste={'campo_1':'valor_1'}
+    mock_client = MagicMock()
 
-def test_success_extraction(tmp_path):
-    (tmp_path / "api1.json").write_text(json.dumps({'status': 'success', 'data': [1, 2, 3]}))
+    mock_client.get_object.return_value = {'Body':io.BytesIO(json.dumps(dados_teste).encode('utf-8')),
+                                            'ResponseMetaData': {'HTTPStatusCode': 200}}
 
-    extracao = DataExtraction()
-    resultado = extracao.extrair_dados_apis(str(tmp_path))
-
-    assert resultado == {'api1': {'status': 'success', 'data': [1, 2, 3]}}
-def test_no_api(): 
+    extracao = DataExtraction(mock_client, 'bucket_teste')
+    extrair = extracao.extrair_dados_apis('key_teste')
+    assert extrair == {'key_teste': dados_teste}
+def test_client_error(): 
+    mock_client = MagicMock() 
+    mock_client.get_object.side_effect = ClientError(  error_response={
+        'Error': {
+            'Code': 'AccessDenied',
+            'Message': 'Access Denied'
+        }
+    },
+    operation_name='PutObject'
+) 
     with pytest.raises(ExtractionErrors) : 
-        extracao = DataExtraction()
-        extrair = extracao.extrair_dados_apis('diretorio_teste')
-@patch('src.data_extraction.data_extraction.open')
-@patch('src.data_extraction.data_extraction.Path')
-def test_permission_error(mock_path_cls, mock_open, caplog):
-    mock_arquivo = MagicMock()
-    mock_arquivo.is_file.return_value = True
-    mock_arquivo.name = 'api1.json'
-    mock_arquivo.__str__.return_value = 'diretorio_teste/api1.json'
-
-    mock_diretorio = MagicMock()
-    mock_diretorio.exists.return_value = True
-    mock_diretorio.iterdir.return_value = [mock_arquivo]
-    mock_path_cls.return_value = mock_diretorio
-
-    mock_open.side_effect = PermissionError("Erro de permissão")
-
-    extracao = DataExtraction()
-    with caplog.at_level(logging.WARNING):
-        extrair = extracao.extrair_dados_apis('diretorio_teste')
-@patch('src.data_extraction.data_extraction.json.load')
-@patch('src.data_extraction.data_extraction.open')
-@patch('src.data_extraction.data_extraction.Path')
-def test_json_invalido(mock_path_cls, mock_open, mock_load):
-    mock_arquivo = MagicMock()
-    mock_arquivo.is_file.return_value = True
-    mock_arquivo.name = 'api1.json'
-    mock_arquivo.__str__.return_value = 'diretorio_teste/api1.json'
-
-    mock_diretorio = MagicMock()
-    mock_diretorio.exists.return_value = True
-    mock_diretorio.iterdir.return_value = [mock_arquivo]
-    mock_path_cls.return_value = mock_diretorio
-
-    mock_load.side_effect = json.JSONDecodeError("Expecting value", "", 0)
-
-    extracao = DataExtraction()
-
-    with pytest.raises(json.JSONDecodeError):
-        extracao.extrair_dados_apis('diretorio_teste')
+        extracao = DataExtraction(mock_client, 'bucket_teste')
+        extrair = extracao.extrair_dados_apis('key_teste')
+@patch('src.data_extraction.data_extraction.json.loads')
+def test_invalid_json(mock_load): 
+    dados_teste={'campo_1':'valor_1'}
+    mock_client = MagicMock()
+    mock_load.side_effect = JSONDecodeError(   msg="Expecting value",
+    doc="{invalido",
+    pos=1)
+    with pytest.raises(ExtractionErrors): 
+        extracao = DataExtraction(mock_client, 'bucket_teste')
+        extrair = extracao.extrair_dados_apis('key_teste')
