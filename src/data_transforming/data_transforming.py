@@ -9,21 +9,22 @@ class DataTransforming:
     def __init__(self, extracted_data:dict[str, dict[str,Any]]) -> None: 
         self.extracted_data = extracted_data 
         self.transformed_data:dict[str, dict[str,Any]] = {}
+        self.cleaned_apis:dict[str,Any] = {}
     def transformar_dados(self) -> None : 
+        
         if not self.extracted_data: 
             logger.error("Erro, nenhum dado foi extraído! ")
             raise TransformingErrors("Erro, nenhum dado foi extraído! ")
         apis = self.extracted_data.get('apis', {})
         if apis : 
             for nome_api, conteudo_api in apis.items():
-                self.tratar_apis(nome_api, conteudo_api)
-
+                new_api_data=self.tratar_apis(nome_api, conteudo_api)
+            self.transformed_data['apis'] = new_api_data
     def tratar_apis(self, nome_api:str, conteudo:Any) -> None : 
-        cleaned_apis = {}
         self.explorar_json(conteudo)
         nome_novo =self.limpar_nomes(nome_api)
-        
-    
+        self.cleaned_apis[nome_novo] 
+        return self.cleaned_apis
     def explorar_json(self , obj:Any, identacao=0) -> None : 
         prefixo = identacao * ' '
         if isinstance(obj, dict): 
