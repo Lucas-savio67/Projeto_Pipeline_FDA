@@ -6,7 +6,7 @@ from src.data_transforming.data_transforming import  DataTransforming
 from config.data_dict import data_source_dict
 from config.loggings import logging
 from config.load_s3_info import load_s3_info, LoadingErrors
-
+from config.cleaning_rules_dict import regras_limpeza
 def main(): 
     try :
         info_s3 = load_s3_info()
@@ -21,7 +21,7 @@ def main():
         injetar = ingestao.injetar_dados()
         extracao = DataExtraction(s3_client, info_s3['bucket'])
         extrair = extracao.extrair_dados()
-        transformacao = DataTransforming(extrair)
+        transformacao = DataTransforming(extrair, regras_limpeza)
         transformar = transformacao.transformar_dados()
         print(transformar)
     except LoadingErrors as e : 
