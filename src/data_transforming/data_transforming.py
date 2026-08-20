@@ -18,28 +18,33 @@ class DataTransforming:
             logger.error("Erro, nenhum dado foi extraído! ")
             raise TransformingErrors("Erro, nenhum dado foi extraído! ")
         apis = self.extracted_data.get('apis', {})
-        if apis : 
-            regras_limpeza_apis = self.cleaning_rules.get('apis', {})
-            if not regras_limpeza_apis : 
-                logger.warning("Não há regras de limpeza para APIs! ")
-            else :
-                for nome_api, conteudo_api in apis.items():
-                    new_api_data=self.tratar_apis(nome_api, conteudo_api, regras_limpeza_apis)
-                self.transformed_data['apis'] = new_api_data
-    def tratar_apis(self, nome_api:str, conteudo:Any, regra_limpeza_apis:dict[str, dict]) -> None : 
-        nome_novo = self.limpar_nomes(nome_api)
-        regras = regra_limpeza_apis.get(nome_novo, {})
-        if not regras : 
-            logger.warning(f"Nenhuma regra de limpeza foi encontrada para a API {nome_novo}!  ")
+        csv = Any
+        if not apis : 
+            logger.warning("Nenhuma API foi extraída! ")
+        else: 
+            tratamento_apis =self.tratar_apis(apis)
+            if not tratamento_apis: 
+                logger.warning("Nenhuma regra de limpeza para APIs foi encontrada! ")
+            else: 
+                self.tratar_apis(tratamento_apis)
+    def tratar_apis(self, apis:dict[str,Any]) -> None : 
+        regras_limpeza_apis = self.cleaning_rules.get('apis', {})
+        if not regras_limpeza_apis : 
             return False
-        self.explorar_json(conteudo)
-        tabelas_novas = regras.get('tabelas a parte', {})
-        if tabelas_novas: 
-            for tabela_nova, info_tabela_nova in tabelas_novas.items(): 
-                
-                tabela_nova = pd.json_normalize(conteudo[0]['results'], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
-                print(tabela_nova.head())
-        return self.cleaned_apis
+        for nome_api,conteudo_api in apis.items(): 
+            nome_novo = self.limpar_nomes(nome_api)
+            regra_api = regras_limpeza_apis.get(nome_novo, {})
+            if not regra_api: 
+                logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
+            else:
+                self.criar_tabelas_novas(conteudo_api, regra_api)
+    def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]): 
+        tabelas_novas = regra.get('tabelas a parte')
+        if not tabelas_novas: 
+            return False 
+        for nome_tabela_nova, info_tabela_nova in tabelas_novas.items(): 
+            nome_tabela_nova = pd.json_normalize(conteudo_api[0]['results'], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
+            print(nome_tabela_nova.head())
     def explorar_json(self , obj:Any, identacao=0) -> None : 
         prefixo = identacao * ' '
         if isinstance(obj, dict): 
