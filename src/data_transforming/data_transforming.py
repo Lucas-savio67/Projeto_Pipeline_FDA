@@ -10,7 +10,7 @@ class DataTransforming:
     def __init__(self, extracted_data:dict[str, dict[str,Any]], cleaning_rules:dict[str, dict]) -> None: 
         self.extracted_data = extracted_data 
         self.transformed_data:dict[str, dict[str,Any]] = {}
-        self.cleaned_apis:dict[str,Any] = {}
+        self.api_tables:dict[str,Any] = {}
         self.cleaning_rules = cleaning_rules
 
 
@@ -31,7 +31,8 @@ class DataTransforming:
             
 
 
-    def tratar_apis(self, apis:dict[str,Any]) -> None : 
+    def tratar_apis(self, apis:dict[str,Any]) -> dict[str, Any]: 
+
         regras_limpeza_apis = self.cleaning_rules.get('apis', {})
         if not regras_limpeza_apis: 
             return False
@@ -41,12 +42,14 @@ class DataTransforming:
             if not regra_api: 
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
-                self.criar_tabelas_novas(conteudo_api, regra_api)
-        return 'Tratamento concluído! '
+                tabelas_novas =self.criar_tabelas_novas(conteudo_api, regra_api)
+                self.api_tables[nome_novo] = tabelas_novas
+        return self.api_tables
 
 
 
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]): 
+        new_tables = {}
         tabelas_novas = regra.get('tabelas_a_parte')
         if not tabelas_novas: 
             return False 
@@ -54,9 +57,10 @@ class DataTransforming:
         parte_essencial = regra.get('parte essencial')
         for nome_tabela_nova, info_tabela_nova in tabelas_novas.items(): 
             if tipo_api == 'lista': 
-                nome_tabela_nova = pd.json_normalize(conteudo_api[0][parte_essencial], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
-            print(nome_tabela_nova.head())
-
+                df = pd.json_normalize(conteudo_api[0][parte_essencial], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
+                new_tables[nome_tabela_nova] = df
+        return new_tables
+        
 
 
     def explorar_json(self , obj:Any, identacao=0) -> None : 
