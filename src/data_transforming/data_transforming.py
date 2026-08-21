@@ -12,24 +12,28 @@ class DataTransforming:
         self.transformed_data:dict[str, dict[str,Any]] = {}
         self.cleaned_apis:dict[str,Any] = {}
         self.cleaning_rules = cleaning_rules
+
+
+
     def transformar_dados(self) -> None : 
         
         if not self.extracted_data: 
             logger.error("Erro, nenhum dado foi extraído! ")
             raise TransformingErrors("Erro, nenhum dado foi extraído! ")
         apis = self.extracted_data.get('apis', {})
-        csv = Any
         if not apis : 
             logger.warning("Nenhuma API foi extraída! ")
         else: 
             tratamento_apis =self.tratar_apis(apis)
             if not tratamento_apis: 
                 logger.warning("Nenhuma regra de limpeza para APIs foi encontrada! ")
-            else: 
-                self.tratar_apis(tratamento_apis)
+
+            
+
+
     def tratar_apis(self, apis:dict[str,Any]) -> None : 
         regras_limpeza_apis = self.cleaning_rules.get('apis', {})
-        if not regras_limpeza_apis : 
+        if not regras_limpeza_apis: 
             return False
         for nome_api,conteudo_api in apis.items(): 
             nome_novo = self.limpar_nomes(nome_api)
@@ -38,13 +42,23 @@ class DataTransforming:
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
                 self.criar_tabelas_novas(conteudo_api, regra_api)
+        return 'Tratamento concluído! '
+
+
+
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]): 
-        tabelas_novas = regra.get('tabelas a parte')
+        tabelas_novas = regra.get('tabelas_a_parte')
         if not tabelas_novas: 
             return False 
+        tipo_api = regra.get('tipo_api' ,{})
+        parte_essencial = regra.get('parte essencial')
         for nome_tabela_nova, info_tabela_nova in tabelas_novas.items(): 
-            nome_tabela_nova = pd.json_normalize(conteudo_api[0]['results'], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
+            if tipo_api == 'lista': 
+                nome_tabela_nova = pd.json_normalize(conteudo_api[0][parte_essencial], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
             print(nome_tabela_nova.head())
+
+
+
     def explorar_json(self , obj:Any, identacao=0) -> None : 
         prefixo = identacao * ' '
         if isinstance(obj, dict): 
@@ -54,6 +68,9 @@ class DataTransforming:
         elif isinstance(obj, list):
             print(f'{prefixo}{type(obj[0])}')
             self.explorar_json(obj[0], identacao+1)
+
+
+
     def limpar_nomes(self,key:str) -> None : 
         nome = Path(key).stem 
         nome = nome.strip().lower()
