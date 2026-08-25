@@ -1,0 +1,15 @@
+.git
+.gitignore
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/
+env/
+.env
+data/
+eda_data.json
+*.egg-info/
+.mypy_cache/
+README.md
+tests/
