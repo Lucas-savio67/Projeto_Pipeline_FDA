@@ -27,7 +27,7 @@ class DataTransforming:
             tratamento_apis =self.tratar_apis(apis)
             if not tratamento_apis: 
                 logger.warning("Nenhuma regra de limpeza para APIs foi encontrada! ")
-
+        return tratamento_apis
             
 
 
@@ -43,15 +43,19 @@ class DataTransforming:
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
                 tabelas_novas =self.criar_tabelas_novas(conteudo_api, regra_api)
-                self.api_tables[nome_novo] = tabelas_novas
+                tabela_principal = self.estruturar_tabela_principal(conteudo_api, regra_api)
+                self.api_tables[nome_novo] = [tabela_principal,tabelas_novas]    
         return self.api_tables
-    def limpar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
+    def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         nome_tabela_principal = regra.get('nome_tabela_principal', {})
+        parte_essencial = regra.get('parte essencial', {})
+        tipo_api = regra.get('tipo_api', {})
         if not nome_tabela_principal : 
             raise TransformingErrors("Erro, a regra para transformação da tabela principal não foi encontrada! ")
         main_table = {}
-        df = pd.json_normalize(conteudo_api)
-        main_table[nome_tabela_principal] = df 
+        if tipo_api == 'lista': 
+            df = pd.json_normalize(conteudo_api[0][parte_essencial])
+            main_table[nome_tabela_principal] = df 
         return main_table
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         new_tables = {}
