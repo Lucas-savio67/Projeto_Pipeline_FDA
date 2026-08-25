@@ -45,10 +45,15 @@ class DataTransforming:
                 tabelas_novas =self.criar_tabelas_novas(conteudo_api, regra_api)
                 self.api_tables[nome_novo] = tabelas_novas
         return self.api_tables
-
-
-
-    def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]): 
+    def limpar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
+        nome_tabela_principal = regra.get('nome_tabela_principal', {})
+        if not nome_tabela_principal : 
+            raise TransformingErrors("Erro, a regra para transformação da tabela principal não foi encontrada! ")
+        main_table = {}
+        df = pd.json_normalize(conteudo_api)
+        main_table[nome_tabela_principal] = df 
+        return main_table
+    def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         new_tables = {}
         tabelas_novas = regra.get('tabelas_a_parte')
         if not tabelas_novas: 
@@ -60,9 +65,9 @@ class DataTransforming:
                 df = pd.json_normalize(conteudo_api[0][parte_essencial], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
                 new_tables[nome_tabela_nova] = df
         return new_tables
+
+
         
-
-
     def explorar_json(self , obj:Any, identacao=0) -> None : 
         prefixo = identacao * ' '
         if isinstance(obj, dict): 
@@ -75,7 +80,7 @@ class DataTransforming:
 
 
 
-    def limpar_nomes(self,key:str) -> None : 
+    def limpar_nomes(self,key:str) -> str : 
         nome = Path(key).stem 
         nome = nome.strip().lower()
         nome = re.sub(r'[^a-z0-9_-]', '_', nome)
