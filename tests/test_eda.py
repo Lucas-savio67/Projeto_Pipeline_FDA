@@ -1,3 +1,4 @@
+import pytest
 import pandas as pd
 from src.eda.eda import EDA, EDAErrors 
 from unittest.mock import mock_open, patch
@@ -17,3 +18,8 @@ def test_success_eda():
                                                 'info_essencial': { 
                                                     'coluna_1': 'str'
                                                 }}}}
+def test_empty_dict(): 
+    data = {}
+    eda = EDA(data)
+    with pytest.raises(EDAErrors): 
+        fazer_eda = eda.fazer_eda_tabelas()
