@@ -3,6 +3,7 @@ from src.data_import.data_import import DataImport
 from src.data_ingestion.data_ingestion import DataIngestion
 from src.data_extraction.data_extraction import DataExtraction
 from src.data_transforming.data_transforming import  DataTransforming
+from src.eda.eda import EDA
 from config.data_dict import data_source_dict
 from config.loggings import logging
 from config.load_s3_info import load_s3_info, LoadingErrors
@@ -23,7 +24,9 @@ def main():
         extrair = extracao.extrair_dados()
         transformacao = DataTransforming(extrair, regras_limpeza)
         transformar = transformacao.transformar_dados()
-        print(transformar)
+        eda = EDA(transformar) 
+        fazer_eda = eda.fazer_eda_tabelas()
+        print(fazer_eda)
     except LoadingErrors as e : 
         return e
 print(main())
