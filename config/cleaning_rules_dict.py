@@ -13,11 +13,8 @@ regras_limpeza = {
                     'record_path': ['patient','drug'] ,
                     'meta': ['safetyreportid'] 
                 } ,
-                'patient': { 
-                    'record_path': ['patient'] ,
-                    'meta': ['safetyreportid']
+
                 }
             } 
         }
     }
-}
