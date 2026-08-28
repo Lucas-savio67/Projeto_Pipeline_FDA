@@ -1,22 +1,17 @@
-2026-08-26 21:13:24,817 - INFO - O fluxo de importação das APIs começou! 
-2026-08-26 21:13:24,818 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
-2026-08-26 21:13:29,016 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
-2026-08-26 21:13:32,968 - INFO - Maximo de páginas alcançado, páginas retornadas: 2 para a API FDA_DRUG! 
-2026-08-26 21:13:32,972 - INFO - APIs importadas com sucesso: ['FDA_DRUG']
-2026-08-26 21:13:32,972 - INFO - O fluxo de importação das APIs terminou! 
-2026-08-26 21:13:32,972 - INFO - Começando o fluxo  de ingestão dos dados! 
-2026-08-26 21:13:32,972 - INFO - Começando o fluxo de ingestão das APIs...
-2026-08-26 21:13:32,972 - INFO - Injetando a APi FDA_DRUG no bucket S3! 
-2026-08-26 21:13:58,092 - INFO - A API FDA_DRUG foi carregada no bucket S3 com sucesso! 
-2026-08-26 21:13:58,092 - INFO - Uma prévia dos dados foi carregada no diretório data com sucesso! 
-2026-08-26 21:13:58,092 - INFO - O fluxo de ingestão terminou
-2026-08-26 21:13:58,092 - INFO - Dados injetados com sucesso: {'dados_injetados': {'apis': {'FDA_DRUG': 'injetada'}}}
-2026-08-26 21:13:58,092 - INFO - Começando o fluxo de extração dos objetos no bucket S3! 
-2026-08-26 21:14:01,534 - INFO - Key: bronze/FDA_DRUG/FDA_DRUG.json extraída com sucesso! 
-2026-08-26 21:14:01,535 - INFO - O fluxo de extração terminou! 
-2026-08-26 21:14:01,535 - INFO - Arquivos extraídos com sucesso: {'apis': ['bronze/FDA_DRUG/FDA_DRUG.json']}
-2026-08-26 21:14:01,890 - INFO - Começando o EDA de tabelas referentes a FDA_DRUG... 
-2026-08-26 21:14:01,890 - INFO - Fazendo o EDA da tabela: eventos... 
-2026-08-26 21:14:01,894 - INFO - Fazendo o EDA da tabela: reaction... 
-2026-08-26 21:14:01,895 - INFO - Fazendo o EDA da tabela: drug... 
-2026-08-26 21:14:01,901 - INFO - Infomações de EDA referentes a FDA_DRUG foram carregadas no arquivo eda_data com sucesso! 
+2026-08-28 17:13:43,742 - INFO - O fluxo de importação das APIs começou! 
+2026-08-28 17:13:43,742 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
+2026-08-28 17:13:49,317 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
+2026-08-28 17:13:53,455 - INFO - Maximo de páginas alcançado, páginas retornadas: 2 para a API FDA_DRUG! 
+2026-08-28 17:13:53,458 - INFO - APIs importadas com sucesso: ['FDA_DRUG']
+2026-08-28 17:13:53,458 - INFO - O fluxo de importação das APIs terminou! 
+2026-08-28 17:13:53,458 - INFO - Começando o fluxo  de ingestão dos dados! 
+2026-08-28 17:13:53,458 - INFO - Começando o fluxo de ingestão das APIs...
+2026-08-28 17:13:53,458 - INFO - Injetando a APi FDA_DRUG no bucket S3! 
+2026-08-28 17:14:06,568 - INFO - A API FDA_DRUG foi carregada no bucket S3 com sucesso! 
+2026-08-28 17:14:06,568 - INFO - Uma prévia dos dados foi carregada no diretório data com sucesso! 
+2026-08-28 17:14:06,568 - INFO - O fluxo de ingestão terminou
+2026-08-28 17:14:06,568 - INFO - Dados injetados com sucesso: {'dados_injetados': {'apis': {'FDA_DRUG': 'injetada'}}}
+2026-08-28 17:14:06,568 - INFO - Começando o fluxo de extração dos objetos no bucket S3! 
+2026-08-28 17:14:10,002 - INFO - Key: bronze/FDA_DRUG/FDA_DRUG.json extraída com sucesso! 
+2026-08-28 17:14:10,005 - INFO - O fluxo de extração terminou! 
+2026-08-28 17:14:10,005 - INFO - Arquivos extraídos com sucesso: {'apis': ['bronze/FDA_DRUG/FDA_DRUG.json']}

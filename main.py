@@ -2,7 +2,7 @@ import boto3
 from src.data_import.data_import import DataImport 
 from src.data_ingestion.data_ingestion import DataIngestion
 from src.data_extraction.data_extraction import DataExtraction
-from src.data_transforming.data_transforming import  DataTransforming
+from src.data_transforming.data_transforming import  DataStructuring, StructuringErrors
 from src.eda.eda import EDA
 from config.data_dict import data_source_dict
 from config.loggings import logging
@@ -22,11 +22,13 @@ def main():
         injetar = ingestao.injetar_dados()
         extracao = DataExtraction(s3_client, info_s3['bucket'])
         extrair = extracao.extrair_dados()
-        transformacao = DataTransforming(extrair, regras_limpeza)
+        transformacao = DataStructuring(extrair, regras_limpeza)
         transformar = transformacao.transformar_dados()
         eda = EDA(transformar) 
         fazer_eda = eda.fazer_eda_tabelas()
         print(fazer_eda)
     except LoadingErrors as e : 
         return e
+    except StructuringErrors as e : 
+        return e 
 print(main())
