@@ -22,7 +22,7 @@ class DataExtraction :
                     key = obj['Key']
                     if key.endswith('.json'): 
                             data_api = self.extrair_dados_apis(key)
-                            self.extracted_data.setdefault('apis', {})[key] = data_api[key]
+                            self.extracted_data.setdefault('apis', {})[key] = data_api
                 except ExtractionErrors as e : 
                     logger.warning(str(e))
                     erros[key] = {'erro': str(e)}
