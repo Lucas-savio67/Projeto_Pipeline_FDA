@@ -42,9 +42,19 @@ class DataStructuring:
                 return conteudo_api[0]
             else : 
                 return conteudo_api
-    #def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
-        #conteudo_certo = self.obter_conteudo(conteudo_api)
-        
+    def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
+        logger.info("Començando o fluxo de estruturação da tabela principal! ")
+        main_table = {}
+        parte_essencial = regra.get('parte_essencial', {})
+        nome_tabela = regra.get('nome_tabela_principal', {})
+        if not nome_tabela or not parte_essencial : 
+            logger.warning('Erro, verifique se a tabela principal possuir nome ou a parte essencial especificada! ')
+            raise StructuringErrors("Erro, verifique se a tabela principal possuir nome ou a parte essencial especificada! ")
+        conteudo_obtido = self.obter_conteudo(conteudo_api)
+        df = pd.json_normalize(conteudo_obtido[parte_essencial])
+        logger.info(f"A tabela {nome_tabela} foi transformada em um DataFrame com sucesso! ")
+        main_table[nome_tabela] = df 
+        logger.info("O fluxo terminou! ")
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         new_tables = {}
         tabelas_novas = regra.get('tabelas_a_parte', {})
