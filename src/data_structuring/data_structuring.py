@@ -31,16 +31,17 @@ class DataStructuring:
             if not regra_api: 
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
-                #tabela_principal = self.estruturar_tabela_principal(conteudo_api, regra_api)
+                tabela_principal = self.estruturar_tabela_principal(conteudo_api, regra_api)
                 tabelas_novas =self.criar_tabelas_novas(conteudo_api, regra_api)
 
-                self.api_tables[nome_novo] = [tabelas_novas]    
+                self.api_tables[nome_novo] = [tabela_principal,tabelas_novas]    
         return self.api_tables
-    def obter_conteudo(self, conteudo_api:Any): 
+    def obter_conteudo(self, conteudo_api:Any) -> list | dict: 
         if isinstance(conteudo_api, list): 
-            if len(conteudo_api) == 0 : 
+            if len(conteudo_api) == 1 : 
                 return conteudo_api[0]
-            
+            else : 
+                return conteudo_api
     #def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         #conteudo_certo = self.obter_conteudo(conteudo_api)
         

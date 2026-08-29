@@ -23,13 +23,8 @@ def main():
         extracao = DataExtraction(s3_client, info_s3['bucket'])
         extrair = extracao.extrair_dados()
         estruturacao = DataStructuring(extrair,regras_limpeza )
-        apis = extrair.get('apis' , {})
-        for api in apis.values(): 
-
-            explorar_json = estruturacao.explorar_json(api)
-            print(explorar_json)
-        #estruturar = estruturacao.estruturar_apis()
-        #return estruturar
+        estruturar = estruturacao.estruturar_apis()
+        return estruturar
     except LoadingErrors as e : 
         return e
 
