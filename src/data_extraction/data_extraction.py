@@ -26,7 +26,7 @@ class DataExtraction :
                 except ExtractionErrors as e : 
                     logger.warning(str(e))
                     erros[key] = {'erro': str(e)}
-        
+        apis = self.extracted_data.get('apis', {})
         logger.info("O fluxo de extração terminou! ")
         if erros :
             logger.info(f"Arquivos com erro: {erros}")
@@ -43,6 +43,7 @@ class DataExtraction :
             extracted_apis[key] = json.loads(conteudo)
             logger.info(f"Key: {key} extraída com sucesso! ")
             return extracted_apis
+            
         except ClientError as e : 
             codigo = e.response['Error']['Code']
             if codigo == 'NoSuchKey':

@@ -12,48 +12,38 @@ class DataStructuring:
         self.transformed_data:dict[str, dict[str,Any]] = {}
         self.api_tables:dict[str,Any] = {}
         self.cleaning_rules = cleaning_rules
-
-
-
-    def estruturar_dados(self) -> None : 
+    def estruturar_apis(self) -> dict[str, Any]: 
         
-        if not self.extracted_data: 
-            logger.error("Erro, nenhum dado foi extraído! ")
-            raise StructuringErrors("Erro, nenhum dado foi extraído! ")
-        apis = self.extracted_data.get('apis', {})
+        apis = self.extracted_data.get('apis' , {})
+
         if not apis : 
-            logger.warning("Nenhuma API foi extraída! ")
-        else: 
-            estruturacao_apis =self.estruturar_apis(apis)
-            if not estruturacao_apis: 
-                logger.warning("Nenhuma regra de limpeza para APIs foi encontrada! ")
-        return estruturacao_apis
-    def estruturar_apis(self, apis:dict[str,Any]) -> dict[str, Any]: 
+            logger.error('Nenhuma API foi extraída! ')
+            raise StructuringErrors("Nenhuma API foi extraída! ")
         regras_limpeza_apis = self.cleaning_rules.get('apis', {})
         if not regras_limpeza_apis: 
-            return False
+            logger.error('Erro, não há regra de limpeza para APIs! ')
+            raise StructuringErrors("Erro, não há regra de limpeza para APIs! ")
         for nome_api,conteudo_api in apis.items(): 
+
+            
             nome_novo = self.limpar_nomes(nome_api)
             regra_api = regras_limpeza_apis.get(nome_novo, {})
             if not regra_api: 
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
-                tabela_principal = self.estruturar_tabela_principal(conteudo_api, regra_api)
+                #tabela_principal = self.estruturar_tabela_principal(conteudo_api, regra_api)
                 tabelas_novas =self.criar_tabelas_novas(conteudo_api, regra_api)
 
-                self.api_tables[nome_novo] = [tabela_principal,tabelas_novas]    
+                self.api_tables[nome_novo] = [tabelas_novas]    
         return self.api_tables
-    def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
-        nome_tabela_principal = regra.get('nome_tabela_principal', {})
-        parte_essencial = regra.get('parte_essencial', {})
-        tipo_api = regra.get('tipo_api', {})
-        if not nome_tabela_principal : 
-            raise StructuringErrors("Erro, a regra para transformação da tabela principal não foi encontrada! ")
-        main_table = {}
-        if tipo_api == 'lista': 
-            df = pd.json_normalize(conteudo_api[0][parte_essencial])
-            main_table[nome_tabela_principal] = df 
-        return main_table
+    def obter_conteudo(self, conteudo_api:Any): 
+        if isinstance(conteudo_api, list): 
+            if len(conteudo_api) == 0 : 
+                return conteudo_api[0]
+            
+    #def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
+        #conteudo_certo = self.obter_conteudo(conteudo_api)
+        
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         new_tables = {}
         tabelas_novas = regra.get('tabelas_a_parte', {})
@@ -74,8 +64,9 @@ class DataStructuring:
                 print(f'{prefixo}.{chave} -> {type(valor)}')
                 self.explorar_json(valor, identacao+1)
         elif isinstance(obj, list):
-            print(f'{prefixo}{type(obj[0])}')
+            print(f'{prefixo}{type(obj)} -> objeto dentro: {type(obj[0])}')
             self.explorar_json(obj[0], identacao+1)
+            
     def limpar_nomes(self,key:str) -> str : 
         nome = Path(key).stem 
         nome = nome.strip().lower()

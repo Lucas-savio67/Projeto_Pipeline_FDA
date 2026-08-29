@@ -1,7 +1,7 @@
 from src.data_structuring.data_structuring import DataStructuring,StructuringErrors 
 from typing import Any
-
-def test_success_structuring(): 
+import pandas as pd 
+def test_success_main_table_structuring(): 
     extracted_data = {'apis': {'FDA_DRUG': {'data': [1,2,3] , 'status': 'success'}}}
     cleaning_rules = { 
     'apis': { 
@@ -28,5 +28,5 @@ def test_success_structuring():
     estruturacao =DataStructuring(extracted_data, cleaning_rules)
     estruturar = estruturacao.estruturar_tabela_principal(api,regra_api) 
     assert estruturar["eventos"].to_dict(orient="records") == [
-    {"id": "1"}
-]
+        {"id": "1"}
+    ]
