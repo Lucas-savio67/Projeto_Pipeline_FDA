@@ -1,6 +1,6 @@
 from src.data_structuring.data_structuring import DataStructuring,StructuringErrors 
-from typing import Any
-import pandas as pd 
+import pandas as pd
+import pytest 
 def test_success_main_structuring(): 
     api = {'meta': 'metadata','results': [{'results_1':'result'}]}
     regras_limpeza = { 
@@ -83,3 +83,27 @@ def test_obter_conteudo():
     estruturacao = DataStructuring(api ,regras_limpeza ) 
     conteudo = estruturacao.obter_conteudo(api, regra_api) 
     assert conteudo == api[0]
+def test_no_table_name(): 
+    api = [{'meta': 'metadata','results': [{'safetyreportid': 'id' ,'results_1':'result' , 'drug': [{'drug_1': 'drugs'}] , 'reaction': [{'reaction_1': 'reactions'}]}]}]
+    regras_limpeza = { 
+                'apis': { 
+                    'FDA_DRUG': {  
+                        'local_registros': 'results',
+                        'tabelas_a_parte': { 
+                            'reaction': { 
+                                'record_path': ['patient', 'reaction'], 
+                                'meta': ['safetyreportid']
+                            } , 
+                            'drug': { 
+                                'record_path': ['patient','drug'] ,
+                                'meta': ['safetyreportid'] 
+                            }
+            
+                            }
+                        } 
+                    }
+                }
+    regra_api = regras_limpeza['apis']['FDA_DRUG']
+    estruturacao = DataStructuring(api ,regras_limpeza) 
+    with pytest.raises(StructuringErrors) : 
+        estruturar = estruturacao.estruturar_tabela_principal(api, regra_api)
