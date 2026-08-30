@@ -13,9 +13,8 @@ class DataStructuring:
         self.api_tables:dict[str,Any] = {}
         self.cleaning_rules = cleaning_rules
     def estruturar_apis(self) -> dict[str, Any]: 
-        
+        errors = {}
         apis = self.extracted_data.get('apis' , {})
-
         if not apis : 
             logger.error('Nenhuma API foi extraída! ')
             raise StructuringErrors("Nenhuma API foi extraída! ")
@@ -23,57 +22,78 @@ class DataStructuring:
         if not regras_limpeza_apis: 
             logger.error('Erro, não há regra de limpeza para APIs! ')
             raise StructuringErrors("Erro, não há regra de limpeza para APIs! ")
+        logger.info("Iniciando o fluxo de estruturação de APIs! ")
         for nome_api,conteudo_api in apis.items(): 
-
-            
             nome_novo = self.limpar_nomes(nome_api)
             regra_api = regras_limpeza_apis.get(nome_novo, {})
             if not regra_api: 
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
-                conteudo_obtido = self. obter_conteudo(conteudo_api)
+                conteudo_obtido = self. obter_conteudo(conteudo_api, regra_api)
                 tabela_principal = self.estruturar_tabela_principal(conteudo_obtido, regra_api)
                 tabelas_novas =self.criar_tabelas_novas(conteudo_obtido, regra_api)
-
-                self.api_tables[nome_novo] = [tabela_principal,tabelas_novas]    
+                if tabelas_novas[1]: 
+                    errors[nome_novo] = tabelas_novas[1]
+                elif tabela_principal[1]:
+                    errors[nome_novo] = tabela_principal[1]
+                self.api_tables[nome_novo] = [tabela_principal[0],tabelas_novas[0]]    
+        if errors: 
+            logger.info(f"Erros de estruturação: {errors}")
+        estruturados = []
+        for tabelas in self.api_tables.values(): 
+            for tabela in tabelas : 
+                for nome_tabela in tabela : 
+                    estruturados.append(nome_tabela)
+        logger.info(f"Tabelas totais estruturadas com sucesso: {estruturados}")
         return self.api_tables
-    def obter_conteudo(self, conteudo_api:Any) -> list | dict: 
+    def obter_conteudo(self, conteudo_api:Any, registros:dict[str,Any]) -> list | dict: 
+        local_registros = registros.get("local_registros")
         if isinstance(conteudo_api, list): 
             if len(conteudo_api) == 1 : 
                 return conteudo_api[0]
             else : 
-                return conteudo_api
+                resultados_emendados = [registro for pagina in conteudo_api for registro in pagina.get(local_registros , [])]
+                return {**conteudo_api[0], local_registros:resultados_emendados}
     def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
+        table_errors = {}
         logger.info("Començando o fluxo de estruturação da tabela principal! ")
         main_table = {}
-        local_registros = regra.get('local_registros', {})
+        local_registros = regra.get('local_registros' , {})
         nome_tabela = regra.get('nome_tabela_principal', {})
         if not nome_tabela or not local_registros : 
-            logger.warning('Erro, verifique se a tabela principal possui nome ou o local dos registros especificados! ')
-            raise StructuringErrors("Erro, verifique se a tabela principal possui nome ou o local dos registros especificados! ")
+            logger.warning('Erro, verifique se a tabela principal possui nome ou o local dos registros especificado! ')
+            raise StructuringErrors("Erro, verifique se a tabela principal possui nome ou o local dos registros especificado! ")
         try :
             df = pd.json_normalize(conteudo_api[local_registros])
             logger.info(f"A tabela {nome_tabela} foi transformada em um DataFrame com sucesso! ")
             main_table[nome_tabela] = df 
-            logger.info("O fluxo terminou! ")
         except KeyError as e : 
-            raise e 
-        return main_table
+            table_errors[nome_tabela] = {'erro': str(e)}
+        if table_errors : 
+            logger.info(f'Erros de estruturação da tabela principal: {table_errors}')
+        logger.info(f'Tabelas principais estruturadas com sucesso: {list(main_table.keys())}')
+        return main_table, table_errors
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
+        table_errors = {}
         new_tables = {} 
         local_registros = regra.get('local_registros' , {})
         tabelas_a_parte = regra.get('tabelas_a_parte' , {})
-        if not local_registros or not tabelas_a_parte : 
-            logger.warning('Erro, verifique se as informações das tabelas a parte existem ou se o local do registros estão especificados! ')
-            raise StructuringErrors("Erro, verifique se as informações das tabelas a parte existem ou se o local do registros estão especificados! ")
+        if not tabelas_a_parte  or not local_registros : 
+            logger.warning('Erro, verifique se as informações das tabelas a parte existem ou o local dos registros especificado! ')
+            raise StructuringErrors("Erro, verifique se as informações das tabelas a parte existem ou o local dos registros especificado! ")
+        logger.info("Iniciando o fluxo de estruturação de tabelas alheias! ")
         for nome_tabela, info_tabela in tabelas_a_parte.items(): 
             try :
                 df = pd.json_normalize(conteudo_api[local_registros] , record_path=info_tabela['record_path'] , meta = info_tabela['meta'])
                 new_tables[nome_tabela] = df 
                 logger.info(f'A tabela {nome_tabela} foi estruturada com sucesso! ')
             except KeyError as e : 
-                raise e  
-        return new_tables 
+                table_errors[nome_tabela] = {'erro': str(e)}
+        if table_errors : 
+            logger.info(f"Erros de estruturação de tabelas alheias: {table_errors}")
+        logger.info(f"Tabela alheias estruturadas com êxito: {list(new_tables.keys())}")
+
+        return new_tables , table_errors
 
     def explorar_json(self , obj:Any, identacao=0) -> None : 
         prefixo = identacao * ' '

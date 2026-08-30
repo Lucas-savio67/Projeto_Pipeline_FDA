@@ -1,17 +1,27 @@
-2026-08-29 19:39:51,715 - INFO - O fluxo de importação das APIs começou! 
-2026-08-29 19:39:51,715 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
-2026-08-29 19:39:57,256 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
-2026-08-29 19:40:01,346 - INFO - Maximo de páginas alcançado, páginas retornadas: 2 para a API FDA_DRUG! 
-2026-08-29 19:40:01,349 - INFO - APIs importadas com sucesso: ['FDA_DRUG']
-2026-08-29 19:40:01,349 - INFO - O fluxo de importação das APIs terminou! 
-2026-08-29 19:40:01,349 - INFO - Começando o fluxo  de ingestão dos dados! 
-2026-08-29 19:40:01,349 - INFO - Começando o fluxo de ingestão das APIs...
-2026-08-29 19:40:01,349 - INFO - Injetando a APi FDA_DRUG no bucket S3! 
-2026-08-29 19:40:11,136 - INFO - A API FDA_DRUG foi carregada no bucket S3 com sucesso! 
-2026-08-29 19:40:11,137 - INFO - Uma prévia dos dados foi carregada no diretório data com sucesso! 
-2026-08-29 19:40:11,137 - INFO - O fluxo de ingestão terminou
-2026-08-29 19:40:11,137 - INFO - Dados injetados com sucesso: {'dados_injetados': {'apis': {'FDA_DRUG': 'injetada'}}}
-2026-08-29 19:40:11,137 - INFO - Começando o fluxo de extração dos objetos no bucket S3! 
-2026-08-29 19:40:14,246 - INFO - Key: bronze/FDA_DRUG/FDA_DRUG.json extraída com sucesso! 
-2026-08-29 19:40:14,248 - INFO - O fluxo de extração terminou! 
-2026-08-29 19:40:14,248 - INFO - Arquivos extraídos com sucesso: {'apis': ['bronze/FDA_DRUG/FDA_DRUG.json']}
+2026-08-30 12:12:57,990 - INFO - O fluxo de importação das APIs começou! 
+2026-08-30 12:12:57,990 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json
+2026-08-30 12:13:03,249 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21804115
+2026-08-30 12:13:07,095 - INFO - [FDA_DRUG] buscando página, url: https://api.fda.gov/drug/event.json?search=receivedate%3A%5B20230101%20TO%2020231231%5D&limit=1000&sort=receivedate%3Aasc&skip=0&search_after=0%3D1672617600000%3B1%3D21805119
+2026-08-30 12:13:11,080 - INFO - Maximo de páginas alcançado, páginas retornadas: 3 para a API FDA_DRUG! 
+2026-08-30 12:13:11,083 - INFO - APIs importadas com sucesso: ['FDA_DRUG']
+2026-08-30 12:13:11,083 - INFO - O fluxo de importação das APIs terminou! 
+2026-08-30 12:13:11,083 - INFO - Começando o fluxo  de ingestão dos dados! 
+2026-08-30 12:13:11,083 - INFO - Começando o fluxo de ingestão das APIs...
+2026-08-30 12:13:11,083 - INFO - Injetando a APi FDA_DRUG no bucket S3! 
+2026-08-30 12:13:28,501 - INFO - A API FDA_DRUG foi carregada no bucket S3 com sucesso! 
+2026-08-30 12:13:28,502 - INFO - Uma prévia dos dados foi carregada no diretório data com sucesso! 
+2026-08-30 12:13:28,502 - INFO - O fluxo de ingestão terminou
+2026-08-30 12:13:28,502 - INFO - Dados injetados com sucesso: {'dados_injetados': {'apis': {'FDA_DRUG': 'injetada'}}}
+2026-08-30 12:13:28,502 - INFO - Começando o fluxo de extração dos objetos no bucket S3! 
+2026-08-30 12:13:32,330 - INFO - Key: bronze/FDA_DRUG/FDA_DRUG.json extraída com sucesso! 
+2026-08-30 12:13:32,334 - INFO - O fluxo de extração terminou! 
+2026-08-30 12:13:32,334 - INFO - Arquivos extraídos com sucesso: {'apis': ['bronze/FDA_DRUG/FDA_DRUG.json']}
+2026-08-30 12:13:32,334 - INFO - Iniciando o fluxo de estruturação de APIs! 
+2026-08-30 12:13:32,335 - INFO - Començando o fluxo de estruturação da tabela principal! 
+2026-08-30 12:13:32,401 - INFO - A tabela eventos foi transformada em um DataFrame com sucesso! 
+2026-08-30 12:13:32,401 - INFO - Tabelas estruturadas com sucesso: ['eventos']
+2026-08-30 12:13:32,401 - INFO - Iniciando o fluxo de estruturação de tabelas alheias! 
+2026-08-30 12:13:32,439 - INFO - A tabela reaction foi estruturada com sucesso! 
+2026-08-30 12:13:33,554 - INFO - A tabela drug foi estruturada com sucesso! 
+2026-08-30 12:13:33,554 - INFO - Tabela estruturadas com êxito: ['reaction', 'drug']
+2026-08-30 12:13:33,554 - INFO - Tabelas estruturadas com sucesso: ['eventos', 'reaction', 'drug']
