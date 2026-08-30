@@ -1,6 +1,8 @@
 from src.data_structuring.data_structuring import DataStructuring,StructuringErrors 
+from unittest.mock import Mock, patch
 import pandas as pd
 import pytest 
+import logging
 def test_success_main_structuring(): 
     api = {'meta': 'metadata','results': [{'results_1':'result'}]}
     regras_limpeza = { 
@@ -107,3 +109,28 @@ def test_no_table_name():
     estruturacao = DataStructuring(api ,regras_limpeza) 
     with pytest.raises(StructuringErrors) : 
         estruturar = estruturacao.estruturar_tabela_principal(api, regra_api)
+def test_key_error(caplog): 
+    api = {'meta': 'metadata','results': [{'results_1':'result'}]}
+    regras_limpeza = { 
+        'apis': { 
+            'FDA_DRUG': { 
+                'nome_tabela_principal': 'eventos' , 
+                'local_registros': 'resul',
+                'tabelas_a_parte': { 
+                    'reaction': { 
+                        'record_path': ['patient', 'reaction'], 
+                        'meta': ['safetyreportid']
+                    } , 
+                    'drug': { 
+                        'record_path': ['patient','drug'] ,
+                        'meta': ['safetyreportid'] 
+                    }
+    
+                    }
+                } 
+            }
+        }
+    regra_api = regras_limpeza['apis']['FDA_DRUG']
+    estruturacao = DataStructuring(api ,regras_limpeza ) 
+    with caplog.at_level(logging.WARNING) : 
+        estruturar = estruturacao.estruturar_tabela_principal(api , regra_api)
