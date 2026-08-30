@@ -2,11 +2,14 @@ import boto3
 from src.data_import.data_import import DataImport 
 from src.data_ingestion.data_ingestion import DataIngestion
 from src.data_extraction.data_extraction import DataExtraction
+from src.data_structuring.data_structuring import DataStructuring
 from config.data_dict import data_source_dict
 from config.loggings import logging
 from config.load_s3_info import load_s3_info, LoadingErrors
+from config.cleaning_rules_dict import regras_limpeza
 def main(): 
     try :
+
         info_s3 = load_s3_info()
         s3_client = boto3.client('s3', 
                             aws_access_key_id=info_s3['chave_acesso'], 
@@ -16,10 +19,13 @@ def main():
         importacao = DataImport(data_sources)
         importar = importacao.importar_apis()
         ingestao = DataIngestion(importar, s3_client, info_s3['bucket'])
-        injetar = ingestao.injetar_dados()
+        ingestao.injetar_dados()
         extracao = DataExtraction(s3_client, info_s3['bucket'])
         extrair = extracao.extrair_dados()
-        print(extrair)
+        estruturacao = DataStructuring(extrair,regras_limpeza )
+        estruturar = estruturacao.estruturar_apis()
+        return estruturar
     except LoadingErrors as e : 
         return e
+
 print(main())
