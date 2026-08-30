@@ -2,7 +2,7 @@ regras_limpeza = {
     'apis': { 
         'FDA_DRUG': { 
             'nome_tabela_principal': 'eventos' , 
-            'parte_essencial': 'results',
+            'local_registros': 'results',
             'tabelas_a_parte': { 
                 'reaction': { 
                     'record_path': ['patient', 'reaction'], 

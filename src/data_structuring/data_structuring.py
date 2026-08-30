@@ -31,8 +31,9 @@ class DataStructuring:
             if not regra_api: 
                 logger.warning(f"A API {nome_api} não possui regra de limpeza! ")
             else:
-                tabela_principal = self.estruturar_tabela_principal(conteudo_api, regra_api)
-                tabelas_novas =self.criar_tabelas_novas(conteudo_api, regra_api)
+                conteudo_obtido = self. obter_conteudo(conteudo_api)
+                tabela_principal = self.estruturar_tabela_principal(conteudo_obtido, regra_api)
+                tabelas_novas =self.criar_tabelas_novas(conteudo_obtido, regra_api)
 
                 self.api_tables[nome_novo] = [tabela_principal,tabelas_novas]    
         return self.api_tables
@@ -45,29 +46,35 @@ class DataStructuring:
     def estruturar_tabela_principal(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
         logger.info("Començando o fluxo de estruturação da tabela principal! ")
         main_table = {}
-        parte_essencial = regra.get('parte_essencial', {})
+        local_registros = regra.get('local_registros', {})
         nome_tabela = regra.get('nome_tabela_principal', {})
-        if not nome_tabela or not parte_essencial : 
-            logger.warning('Erro, verifique se a tabela principal possuir nome ou a parte essencial especificada! ')
-            raise StructuringErrors("Erro, verifique se a tabela principal possuir nome ou a parte essencial especificada! ")
-        conteudo_obtido = self.obter_conteudo(conteudo_api)
-        df = pd.json_normalize(conteudo_obtido[parte_essencial])
-        logger.info(f"A tabela {nome_tabela} foi transformada em um DataFrame com sucesso! ")
-        main_table[nome_tabela] = df 
-        logger.info("O fluxo terminou! ")
+        if not nome_tabela or not local_registros : 
+            logger.warning('Erro, verifique se a tabela principal possui nome ou o local dos registros especificados! ')
+            raise StructuringErrors("Erro, verifique se a tabela principal possui nome ou o local dos registros especificados! ")
+        try :
+            df = pd.json_normalize(conteudo_api[local_registros])
+            logger.info(f"A tabela {nome_tabela} foi transformada em um DataFrame com sucesso! ")
+            main_table[nome_tabela] = df 
+            logger.info("O fluxo terminou! ")
+        except KeyError as e : 
+            raise e 
+        return main_table
     def criar_tabelas_novas(self, conteudo_api:Any, regra:dict[str,Any]) -> dict[str,Any]: 
-        new_tables = {}
-        tabelas_novas = regra.get('tabelas_a_parte', {})
-        if not tabelas_novas: 
-            return False 
-        tipo_api = regra.get('tipo_api' ,{})
-        parte_essencial = regra.get('parte_essencial')
-        for nome_tabela_nova, info_tabela_nova in tabelas_novas.items(): 
-    
-            if tipo_api == 'lista': 
-                df = pd.json_normalize(conteudo_api[0][parte_essencial], record_path=info_tabela_nova['record_path'], meta=info_tabela_nova['meta'])
-                new_tables[nome_tabela_nova] = df
-        return new_tables
+        new_tables = {} 
+        local_registros = regra.get('local_registros' , {})
+        tabelas_a_parte = regra.get('tabelas_a_parte' , {})
+        if not local_registros or not tabelas_a_parte : 
+            logger.warning('Erro, verifique se as informações das tabelas a parte existem ou se o local do registros estão especificados! ')
+            raise StructuringErrors("Erro, verifique se as informações das tabelas a parte existem ou se o local do registros estão especificados! ")
+        for nome_tabela, info_tabela in tabelas_a_parte.items(): 
+            try :
+                df = pd.json_normalize(conteudo_api[local_registros] , record_path=info_tabela['record_path'] , meta = info_tabela['meta'])
+                new_tables[nome_tabela] = df 
+                logger.info(f'A tabela {nome_tabela} foi estruturada com sucesso! ')
+            except KeyError as e : 
+                raise e  
+        return new_tables 
+
     def explorar_json(self , obj:Any, identacao=0) -> None : 
         prefixo = identacao * ' '
         if isinstance(obj, dict): 
