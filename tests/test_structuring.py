@@ -58,3 +58,28 @@ def test_success_separate_table_structuring():
     assert set(estruturar[1].keys()) == {'reaction', 'drug'}
     assert estruturar[1]['reaction']['erro'] == "'patient'"
     assert estruturar[1]['drug']['erro'] == "'patient'"
+def test_obter_conteudo(): 
+    api = [{'meta': 'metadata','results': [{'safetyreportid': 'id' ,'results_1':'result' , 'drug': [{'drug_1': 'drugs'}] , 'reaction': [{'reaction_1': 'reactions'}]}]}]
+    regras_limpeza = { 
+            'apis': { 
+                'FDA_DRUG': { 
+                    'nome_tabela_principal': 'eventos' , 
+                    'local_registros': 'results',
+                    'tabelas_a_parte': { 
+                        'reaction': { 
+                            'record_path': ['patient', 'reaction'], 
+                            'meta': ['safetyreportid']
+                        } , 
+                        'drug': { 
+                            'record_path': ['patient','drug'] ,
+                            'meta': ['safetyreportid'] 
+                        }
+        
+                        }
+                    } 
+                }
+            }
+    regra_api = regras_limpeza['apis']['FDA_DRUG']
+    estruturacao = DataStructuring(api ,regras_limpeza ) 
+    conteudo = estruturacao.obter_conteudo(api, regra_api) 
+    assert conteudo == api[0]
