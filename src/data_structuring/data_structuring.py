@@ -68,7 +68,7 @@ class DataStructuring:
             logger.info(f"A tabela {nome_tabela} foi transformada em um DataFrame com sucesso! ")
             main_table[nome_tabela] = df 
         except KeyError as e : 
-            logger.warning(f"Erro: {e} ao estruturar a tabela principal! ")
+            logger.warning(f"Erro, a chave {e} não foi encontrada! ")
             table_errors[nome_tabela] = {'erro': str(e)}
         if table_errors : 
             logger.info(f'Erros de estruturação da tabela principal: {table_errors}')
@@ -89,7 +89,7 @@ class DataStructuring:
                 new_tables[nome_tabela] = df 
                 logger.info(f'A tabela {nome_tabela} foi estruturada com sucesso! ')
             except KeyError as e : 
-                logger.warning(f"Erro: {e} ao estruturar a tabela {nome_tabela}! ")
+                logger.warning(f"Erro, a chave {e} não foi encontrada! ")
                 table_errors[nome_tabela] = {'erro': str(e)}
         if table_errors : 
             logger.info(f"Erros de estruturação de tabelas alheias: {table_errors}")
